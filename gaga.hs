@@ -5,6 +5,7 @@
 import Control.Monad (liftM)
 import System.Random (newStdGen, randomR)
 import Data.List (intersect)
+import Data.Complex (Complex(..), imagPart, realPart)
 
 -- Utils
 decc :: (Num a) => a -> a
@@ -478,3 +479,23 @@ placeBy qIndex board = [
     qRow = decc qIndex          -- Row (0-index) of checking queen
 
 -- Misc: Matrix to spiral
+type Point a = (a, a)
+
+turnLeft :: (RealFloat a) => Complex a -> Complex a
+turnLeft vec = vec * (0 :+ (-1))
+
+-- Get next coords for matrix (y-axis is inverted)
+next :: (Integral a, RealFloat b) => Point a -> Complex b -> Point a
+next (x, y) vec = (x + (floor $ realPart vec), y + (floor $ imagPart vec))
+
+-- Get elem at coord (inverse for matrix system)
+get :: (Integral a) => Point a -> [[b]] -> b
+get (x, y) mat = mat !! fromIntegral y !! fromIntegral x
+
+-- Eat num elems from a matrix along a certain vector
+eat :: (Num a, Eq a, RealFloat b, Integral c) => a -> Point c -> Complex b -> [[d]] -> [d]
+eat 0 _ _ _ = []
+eat n pt vec mat = el : rest
+  where
+    el = get pt mat
+    rest = eat (decc n) (next pt vec) vec mat
