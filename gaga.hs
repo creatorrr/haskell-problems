@@ -455,6 +455,18 @@ table' n p = [
     bs <- genBools n
   ]
 
+-- #49
+toBinary :: Bool -> Char
+toBinary b
+  | b == True = '1'
+  | otherwise = '0'
+
+boolToStr :: [Bool] -> String
+boolToStr = map toBinary
+
+gray :: Int -> [String]
+gray = (map boolToStr) . genBools
+
 -- #90
 -- 8-queens problem solution
 -- (NOT an N-QUEENS solution, however)
