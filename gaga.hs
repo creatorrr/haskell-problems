@@ -496,6 +496,7 @@ get (x, y) mat = mat !! fromIntegral y !! fromIntegral x
 eat
   :: (Num a, Eq a, RealFloat b, Integral c) =>
       a -> Point c -> Complex b -> [[d]] -> [d]
+
 eat 0 _ _ _ = []
 eat n pt vec mat = el : rest
   where
@@ -503,11 +504,10 @@ eat n pt vec mat = el : rest
     rest = eat (decc n) (next pt vec) vec mat
 
 -- Spiral generator
-spiral mat = spiralGen (myLength mat) (0, 0) (1 :+ 0) mat
-
 spiralGen
   :: (RealFloat b, Integral c) =>
       Int -> Point c -> Complex b -> [[a]] -> [a]
+
 spiralGen 0 _ _ _ = []
 spiralGen n pt vec mat = (eat n pt vec mat) ++ spiralGen nextN nextPt nextVec mat
   where
@@ -515,3 +515,8 @@ spiralGen n pt vec mat = (eat n pt vec mat) ++ spiralGen nextN nextPt nextVec ma
     nextPt = next pt ((fromIntegral . decc $ n) * vec + nextVec)
     nextN = if horizontal vec then decc n else n
     horizontal = (==0) . imagPart
+
+-- Spiral
+spiral :: [[a]] -> [a]
+spiral mat = spiralGen (myLength mat) (0, 0) (1 :+ 0) mat
+
