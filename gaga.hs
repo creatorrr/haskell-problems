@@ -401,29 +401,36 @@ largeGbs a b = (filter big . map snd) $ goldbachList a b
     threshold = 50
 
 -- #46
+infixl 3 `and'`
 and' :: Bool -> Bool -> Bool
 and' True True = True
 and' _ _ = False
 
+infixl 3 `or'`
 or' :: Bool -> Bool -> Bool
 or' False False = False
 or' _ _ = True
 
+infixl 3 `not'`
 not' :: Bool -> Bool
 not' True = False
 not' False = True
 
+infixl 3 `nand'`
 nand' :: Bool -> Bool -> Bool
 nand' a b = not' $ and' a b
 
+infixl 3 `nor'`
 nor' :: Bool -> Bool -> Bool
 nor' a b = not' $ or' a b
 
+infixl 3 `eq'`
 eq' :: Bool -> Bool -> Bool
 eq' a b
   | a==b = True
   | otherwise = False
 
+infixl 3 `xor'`
 xor' :: Bool -> Bool -> Bool
 xor' a b = not' $ eq' a b
 
@@ -432,6 +439,20 @@ table p = [
     (a, b, p a b) |
     a <- [True, False],
     b <- [True, False]
+  ]
+
+-- #48
+genBools :: (Num a, Eq a) => a -> [[Bool]]
+genBools 0 = [[]]
+genBools n = [ a:rest | a <- [True, False], rest <- genBools (n-1)]
+
+table'
+  :: (Num a, Eq a) =>
+    a -> ([Bool] -> Bool) -> [[Bool]]
+
+table' n p = [
+    bs ++ [p bs] |
+    bs <- genBools n
   ]
 
 -- #90
