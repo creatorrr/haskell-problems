@@ -467,6 +467,22 @@ boolToStr = map toBinary
 gray :: Int -> [String]
 gray = (map boolToStr) . genBools
 
+-- #55
+data Tree a = Empty | Node a (Tree a) (Tree a)
+            deriving (Show, Eq, Ord)
+
+balSplit [] = ([], [])
+balSplit [x] = ([x], [])
+balSplit (x1:x2:xs) = (x1:l, x2:r)
+  where
+    (l, r) = balSplit xs
+
+balTree [] = Empty
+balTree [x] = Node x Empty Empty
+balTree (x:xs) = Node x (balTree l) (balTree r)
+  where
+    (l, r) = balSplit xs
+
 -- #90
 -- 8-queens problem solution
 -- (NOT an N-QUEENS solution, however)
