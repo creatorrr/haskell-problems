@@ -2,8 +2,8 @@
 -- https://wiki.haskell.org/99_questions/1_to_10
 
 -- Imports
-import Control.Monad (liftM)
 import System.Random (newStdGen, randomR)
+import Control.Applicative ((<$>), (<*>), pure)
 import Data.List (intersect)
 import Data.Complex (Complex(..), imagPart, realPart)
 
@@ -216,7 +216,7 @@ rndPermu l = rndSelect l $ myLength l
 -- #26
 permutations :: Int -> [a] -> [[a]]
 permutations 0 l = []
-permutations 1 l = [[a] | a <- l]
+permutations 1 l = pure <$> l
 permutations n l = [
     a : p |
 
@@ -232,7 +232,7 @@ permutations n l = [
 
 combinations :: Int -> [a] -> [[a]]
 combinations 0 l = []
-combinations 1 l = [[a] | a <- l]
+combinations 1 l = pure <$> l
 combinations n l = [
     -- Add elem to combination
     (l !! i) : c |
@@ -291,10 +291,10 @@ sort' = sortFunc id
 
 sortFunc :: (Ord b) => (a -> b) -> [a] -> [a]
 sortFunc _ [] = []
-sortFunc f (x:xs) = sortFunc f smaller ++ [x] ++ sortFunc f larger
+sortFunc f (x:xs) = sortFunc f (smaller xs) ++ [x] ++ sortFunc f (larger xs)
   where
-    smaller = [a | a <- xs, (f a) <= (f x)]
-    larger =  [a | a <- xs, (f a) > (f x)]
+    smaller = filter $ (<= f x) . f
+    larger = filter $ (> f x) . f
 
 groupBy :: (Eq b) => (a -> b) -> [a] -> [[a]]
 groupBy _ [] = []
